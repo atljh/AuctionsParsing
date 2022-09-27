@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta
-from typing import Dict, List, Union
+from typing import Dict, List
 import requests
 from bs4 import BeautifulSoup
 from openpyxl import Workbook
 from openpyxl.styles import Font 
 import config
-
+from openpyxl import load_workbook
 
 
 headers = {
@@ -17,7 +17,7 @@ proxies = {
 }
 
 
-def excel(auctions: List[Dict[str, str]]) -> None:
+def init_excel():
     workbook = Workbook()
     sheet = workbook.active
     sheet.append(('Auction Status', 'Auction Date', 'Amount', 'Sold To','Auction Type', 'Case #', 'Final Judgement Amount', 'Parcel ID', 'Property Address', 'Assessed Value', 'Plaintiff Max Bid'))
@@ -28,11 +28,15 @@ def excel(auctions: List[Dict[str, str]]) -> None:
             sheet.column_dimensions[row].width = 25
     for row in range(1, 12):
         sheet.cell(row = 1, column = row).font = Font(size=15)
+    workbook.save(filename=f"{config.filename}")
 
+
+def excel(auctions: List[Dict[str, str]]) -> None:
+    workbook = load_workbook(filename=f'{config.filename}')
+    sheet = workbook.active
     for auc in auctions:
         sheet.append(tuple(auc.values()))
-    workbook.save(filename="auctions.xlsx")
-
+    workbook.save(filename=f"{config.filename}")
 
 
 def get_location(url: str) -> None:
@@ -42,8 +46,6 @@ def get_location(url: str) -> None:
     ip = soup.find('div', class_='ip').text.strip()
     location = soup.find('div', class_='value-country').text.strip()
     print(f'IP: {ip}\nLocation: {location}')
-
-
 
 
 def parse(date: str) -> None:
@@ -88,9 +90,13 @@ def date_generator(date_from: str, date_to: str) -> None:
 
 
 def main():
+    init_excel()
     get_location('https://2ip.io/')
     date_generator(date_from=config.date_from, date_to=config.date_to)
 
 
+
+
 if __name__ == '__main__':
     main()
+

@@ -1,0 +1,15 @@
+# AuctionsParsing
+
+Script for parsing auctions
+
+congif example:
+
+  proxy_host = '111.111.111.111'
+  proxy_port = '8888'
+  proxy_login = 'login'
+  proxy_password = 'password'
+
+  date_from = '8/26/2022'
+  date_to = '1/1/2023'
+
+  filename = 'auctions.xlsx'
